@@ -1,0 +1,30 @@
+2023-09-03 01:02:13.9896 Debug Message Template Auto Format enabled
+2023-09-03 01:02:14.0944 Debug Adding target NLog.Targets.FileTarget(Name=logfile)
+2023-09-03 01:02:14.0944 Info Registered target NLog.Targets.FileTarget(Name=logfile)
+2023-09-03 01:02:14.1158 Info NLog, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.2.3.1999. Product version: 5.2.3+a5ddef92a8afb22508450803e37c001f4a3ba52a. GlobalAssemblyCache: False
+2023-09-03 01:02:14.1238 Debug Watching file-filter 'nlog.config' in directory: C:\Users\getha\OneDrive\Рабочий стол\CompanyEmployees\CompanyEmployees
+2023-09-03 01:02:14.1238 Debug --- NLog configuration dump ---
+2023-09-03 01:02:14.1238 Debug Targets:
+2023-09-03 01:02:14.1238 Debug FileTarget(Name=logfile)
+2023-09-03 01:02:14.1238 Debug Rules:
+2023-09-03 01:02:14.1238 Debug logNamePattern: (:All) levels: [ Debug Info Warn Error Fatal ] writeTo: [ logfile ]
+2023-09-03 01:02:14.1238 Debug --- End of NLog configuration dump ---
+2023-09-03 01:02:14.1401 Info Validating config: TargetNames=logfile, ConfigItems=12, FilePath=C:\Users\getha\OneDrive\Рабочий стол\CompanyEmployees\CompanyEmployees\nlog.config
+2023-09-03 01:02:14.1401 Debug Unused target checking is started... Rule Count: 1, Target Count: 1
+2023-09-03 01:02:14.1401 Debug Unused target checking is completed. Total Rule Count: 1, Total Target Count: 1, Unused Target Count: 0
+2023-09-03 01:02:14.1582 Info Configuration initialized.
+2023-09-03 01:08:16.3611 Debug Message Template Auto Format enabled
+2023-09-03 01:08:16.4599 Debug Adding target NLog.Targets.FileTarget(Name=logfile)
+2023-09-03 01:08:16.4599 Info Registered target NLog.Targets.FileTarget(Name=logfile)
+2023-09-03 01:08:16.4820 Info NLog, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.2.3.1999. Product version: 5.2.3+a5ddef92a8afb22508450803e37c001f4a3ba52a. GlobalAssemblyCache: False
+2023-09-03 01:08:16.4820 Debug Watching file-filter 'nlog.config' in directory: C:\Users\getha\OneDrive\Рабочий стол\CompanyEmployees\CompanyEmployees
+2023-09-03 01:08:16.4820 Debug --- NLog configuration dump ---
+2023-09-03 01:08:16.4820 Debug Targets:
+2023-09-03 01:08:16.4934 Debug FileTarget(Name=logfile)
+2023-09-03 01:08:16.4934 Debug Rules:
+2023-09-03 01:08:16.4934 Debug logNamePattern: (:All) levels: [ Debug Info Warn Error Fatal ] writeTo: [ logfile ]
+2023-09-03 01:08:16.4934 Debug --- End of NLog configuration dump ---
+2023-09-03 01:08:16.4934 Info Validating config: TargetNames=logfile, ConfigItems=12, FilePath=C:\Users\getha\OneDrive\Рабочий стол\CompanyEmployees\CompanyEmployees\nlog.config
+2023-09-03 01:08:16.5100 Debug Unused target checking is started... Rule Count: 1, Target Count: 1
+2023-09-03 01:08:16.5100 Debug Unused target checking is completed. Total Rule Count: 1, Total Target Count: 1, Unused Target Count: 0
+2023-09-03 01:08:16.5248 Info Configuration initialized.
