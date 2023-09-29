@@ -13,6 +13,8 @@ namespace Repository
         private RepositoryContext _repositoryContext;
         private ICompanyRepository _companyRepository;
         private IEmployeeRepository _employeeRepository;
+        private IGradeRepository _gradeRepository;
+        private IStudentRepository _studentRepository;
         public RepositoryManager(RepositoryContext repositoryContext)
         {
             _repositoryContext = repositoryContext;
@@ -34,6 +36,24 @@ namespace Repository
                     _employeeRepository = new EmployeeRepository(_repositoryContext);
                 return _employeeRepository;
             }
+        }
+        public IGradeRepository Grade
+        {
+            get
+            {
+                if(_gradeRepository == null)
+                    _gradeRepository = new GradeRepository(_repositoryContext);
+                return _gradeRepository;
+            }
+        }
+        public IStudentRepository Student
+        {
+            get
+            {
+                if (_studentRepository == null)
+                    _studentRepository = new StudentRepostiory(_repositoryContext);
+                return _studentRepository;
+            } 
         }
         public void Save() => _repositoryContext.SaveChanges();
     }
