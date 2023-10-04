@@ -10,5 +10,6 @@ namespace Contracts
     public interface IGradeRepository
     {
         IEnumerable<Grade> GetAllGrades(bool trackChanges);
+        Grade GetGrade(Guid gradeId, bool trackChanges);
     }
 }

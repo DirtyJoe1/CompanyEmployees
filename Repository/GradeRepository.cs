@@ -20,5 +20,8 @@ namespace Repository
             FindAll(trackChanges)
             .OrderBy(c => c.Name)
             .ToList();
+        public Grade GetGrade(Guid gradeId, bool trackChanges) =>
+            FindByCondition(c => c.Id.Equals(gradeId), trackChanges)
+            .SingleOrDefault();
     }
 }

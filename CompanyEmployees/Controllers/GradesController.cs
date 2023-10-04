@@ -26,5 +26,20 @@ namespace CompanyEmployees.Controllers
             var gradesDto = _mapper.Map<IEnumerable<GradeDto>>(grades);
             return Ok(gradesDto);
         }
+        [HttpGet("{id}")]
+        public IActionResult GetGrade(Guid id)
+        {
+            var grade = _repository.Grade.GetGrade(id, trackChanges: false);
+            if (grade == null)
+            {
+                _logger.LogInfo($"Grade with id: {id} doesn't exist in the database.");
+                return NotFound();
+            }
+            else
+            {
+                var gradeDto = _mapper.Map<GradeDto>(grade);
+                return Ok(gradeDto);
+            }
+        }
     }
 }

@@ -13,5 +13,11 @@ namespace Repository
     {
         public StudentRepostiory(RepositoryContext repositoryContext)
             : base(repositoryContext) { }
+        public IEnumerable<Student> GetStudents(Guid gradeId, bool trackChanges) =>
+            FindByCondition(e => e.GradeId.Equals(gradeId), trackChanges)
+            .OrderBy(e => e.Name);
+        public Student GetStudent(Guid gradeId, Guid id, bool trackChanges) =>
+            FindByCondition(e => e.GradeId.Equals(gradeId) && e.Id.Equals(id), trackChanges)
+            .SingleOrDefault();
     }
 }
