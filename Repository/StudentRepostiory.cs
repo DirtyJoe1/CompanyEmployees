@@ -19,5 +19,10 @@ namespace Repository
         public Student GetStudent(Guid gradeId, Guid id, bool trackChanges) =>
             FindByCondition(e => e.GradeId.Equals(gradeId) && e.Id.Equals(id), trackChanges)
             .SingleOrDefault();
+        public void CreateStudentForGrade(Guid gradeId, Student student)
+        {
+            student.GradeId = gradeId;
+            Create(student);
+        }
     }
 }

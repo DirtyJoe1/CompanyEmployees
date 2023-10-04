@@ -14,6 +14,10 @@ namespace CompanyEmployees.Mapping
             CreateMap<Grade, GradeDto>();
             CreateMap<Employee, EmployeeDto>();
             CreateMap<Student, StudentDto>();
+            CreateMap<CompanyForCreationDto, Company>();
+            CreateMap<EmployeeForCreationDto, Employee>();
+            CreateMap<GradeForCreationDto, Grade>();
+            CreateMap<StudentForCreationDto, Student>();
         }
     }
 }

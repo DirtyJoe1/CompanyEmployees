@@ -23,5 +23,8 @@ namespace Repository
         public Grade GetGrade(Guid gradeId, bool trackChanges) =>
             FindByCondition(c => c.Id.Equals(gradeId), trackChanges)
             .SingleOrDefault();
+        public void CreateGrade(Grade grade) => Create(grade);
+        public IEnumerable<Grade> GetByIds(IEnumerable<Guid> ids, bool trackChanges) =>
+            FindByCondition(x => ids.Contains(x.Id), trackChanges).ToList();
     }
 }

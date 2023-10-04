@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Contracts;
 using Entities.DataTransferObjects;
+using Entities.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -32,7 +33,7 @@ namespace CompanyEmployees.Controllers
             var studentsDto = _mapper.Map<IEnumerable<StudentDto>>(studentsFromDb);
             return Ok(studentsDto);
         }
-        [HttpGet("{id}")]
+        [HttpGet("{id}", Name = "GetStudentForGrade")]
         public IActionResult GetStudentForGrade(Guid gradeId, Guid id)
         {
             var grade = _repository.Grade.GetGrade(gradeId, trackChanges: false);
@@ -49,6 +50,30 @@ namespace CompanyEmployees.Controllers
             }
             var student = _mapper.Map<StudentDto>(studentDb);
             return Ok(student);
+        }
+        [HttpPost]
+        public IActionResult CreateStudentForGrade(Guid gradeId, [FromBody] StudentForCreationDto student)
+        {
+            if (student == null)
+            {
+                _logger.LogError("StudentForCreationDto object sent from client is null.");
+                return BadRequest("StudentForCreationDto object is null");
+            }
+            var grade = _repository.Grade.GetGrade(gradeId, trackChanges: false);
+            if (grade == null)
+            {
+                _logger.LogInfo($"Grade with id: {gradeId} doesn't exist in the database.");
+                return NotFound();
+            }
+            var studentEntity = _mapper.Map<Student>(student);
+            _repository.Student.CreateStudentForGrade(gradeId, studentEntity);
+            _repository.Save();
+            var studentToReturn = _mapper.Map<StudentDto>(studentEntity);
+            return CreatedAtRoute("GetStudentForGrade", new
+            {
+                gradeId,
+                id = studentToReturn.Id
+            }, studentToReturn);
         }
     }
 }

@@ -11,5 +11,7 @@ namespace Contracts
     {
         IEnumerable<Student> GetStudents(Guid gradeId, bool trackChanges);
         Student GetStudent(Guid gradeId, Guid id, bool trackChanges);
+        void CreateStudentForGrade(Guid gradeId, Student student);
+
     }
 }

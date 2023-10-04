@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
+using CompanyEmployees.ModelBinders;
 using Contracts;
 using Entities.DataTransferObjects;
+using Entities.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -26,7 +28,7 @@ namespace CompanyEmployees.Controllers
             var gradesDto = _mapper.Map<IEnumerable<GradeDto>>(grades);
             return Ok(gradesDto);
         }
-        [HttpGet("{id}")]
+        [HttpGet("{id}", Name = "GradeById")]
         public IActionResult GetGrade(Guid id)
         {
             var grade = _repository.Grade.GetGrade(id, trackChanges: false);
@@ -40,6 +42,59 @@ namespace CompanyEmployees.Controllers
                 var gradeDto = _mapper.Map<GradeDto>(grade);
                 return Ok(gradeDto);
             }
+        }
+        [HttpPost]
+        public IActionResult CreateGrade([FromBody] GradeForCreationDto grade)
+        {
+            if (grade == null)
+            {
+                _logger.LogError("GradeForCreationDto object sent from client is null.");
+                return BadRequest("GradeForCreationDto object is null");
+            }
+            var gradeEntity = _mapper.Map<Grade>(grade);
+            _repository.Grade.CreateGrade(gradeEntity);
+            _repository.Save();
+            var gradeToReturn = _mapper.Map<GradeDto>(gradeEntity);
+            return CreatedAtRoute("GradeById", new { id = gradeToReturn.Id },
+            gradeToReturn);
+        }
+        [HttpGet("collection/({ids})", Name = "GradeCollection")]
+        public IActionResult GetGradeCollection([ModelBinder(BinderType = typeof(ArrayModelBinder))] IEnumerable<Guid> ids)
+        {
+            if (ids == null)
+            {
+                _logger.LogError("Parameter ids is null");
+                return BadRequest("Parameter ids is null");
+            }
+            var gradeEntities = _repository.Grade.GetByIds(ids, trackChanges: false);
+            if (ids.Count() != gradeEntities.Count())
+            {
+                _logger.LogError("Some ids are not valid in a collection");
+                return NotFound();
+            }
+            var gradesToReturn =
+           _mapper.Map<IEnumerable<GradeDto>>(gradeEntities);
+            return Ok(gradesToReturn);
+        }
+        [HttpPost("collection")]
+        public IActionResult CreateGradeCollection([FromBody] IEnumerable<GradeForCreationDto> gradeCollection)
+        {
+            if (gradeCollection == null)
+            {
+                _logger.LogError("Grade collection sent from client is null.");
+                return BadRequest("Grade collection is null");
+            }
+            var gradeEntities = _mapper.Map<IEnumerable<Grade>>(gradeCollection);
+            foreach (var grade in gradeEntities)
+            {
+                _repository.Grade.CreateGrade(grade);
+            }
+            _repository.Save();
+            var gradeCollectionToReturn =
+            _mapper.Map<IEnumerable<GradeDto>>(gradeEntities);
+            var ids = string.Join(",", gradeCollectionToReturn.Select(c => c.Id));
+            return CreatedAtRoute("GradeCollection", new { ids },
+            gradeCollectionToReturn);
         }
     }
 }
