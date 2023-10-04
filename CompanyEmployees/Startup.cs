@@ -1,4 +1,5 @@
 ﻿using CompanyEmployees.Extensions;
+using Contracts;
 using Microsoft.AspNetCore.HttpOverrides;
 using NLog;
 
@@ -24,9 +25,10 @@ namespace CompanyEmployees
             services.AddControllers();
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
+            services.AddAutoMapper(typeof(Startup));
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerManager logger)
         {
             if (env.IsDevelopment())
             {
@@ -34,7 +36,7 @@ namespace CompanyEmployees
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
-
+            app.ConfigureExceptionHandler(logger);
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCors("CorsPolicy");

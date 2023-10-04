@@ -41,7 +41,7 @@ namespace Repository
         {
             get
             {
-                if(_gradeRepository == null)
+                if (_gradeRepository == null)
                     _gradeRepository = new GradeRepository(_repositoryContext);
                 return _gradeRepository;
             }

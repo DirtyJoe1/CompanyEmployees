@@ -12,6 +12,13 @@ namespace Repository
     public class GradeRepository : RepositoryBase<Grade>, IGradeRepository
     {
         public GradeRepository(RepositoryContext repositoryContext)
-            : base(repositoryContext) { }
+            : base(repositoryContext) 
+        {
+
+        }
+        public IEnumerable<Grade> GetAllGrades(bool trackChanges) =>
+            FindAll(trackChanges)
+            .OrderBy(c => c.Name)
+            .ToList();
     }
 }
