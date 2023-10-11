@@ -24,5 +24,9 @@ namespace Repository
             student.GradeId = gradeId;
             Create(student);
         }
+        public void DeleteStudent(Student student)
+        {
+            Delete(student);
+        }
     }
 }

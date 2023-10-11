@@ -18,6 +18,10 @@ namespace CompanyEmployees.Mapping
             CreateMap<EmployeeForCreationDto, Employee>();
             CreateMap<GradeForCreationDto, Grade>();
             CreateMap<StudentForCreationDto, Student>();
+            CreateMap<EmployeeForUpdateDto, Employee>().ReverseMap();
+            CreateMap<StudentForUpdateDto, Student>().ReverseMap();
+            CreateMap<CompanyForUpdateDto, Company>();
+            CreateMap<GradeForUpdateDto, Grade>();
         }
     }
 }

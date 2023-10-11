@@ -13,6 +13,6 @@ namespace Contracts
         Grade GetGrade(Guid gradeId, bool trackChanges);
         void CreateGrade(Grade grade);
         IEnumerable<Grade> GetByIds(IEnumerable<Guid> ids, bool trackChanges);
-
+        void DeleteGrade(Grade grade);
     }
 }

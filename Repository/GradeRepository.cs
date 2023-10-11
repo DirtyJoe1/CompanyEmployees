@@ -26,5 +26,9 @@ namespace Repository
         public void CreateGrade(Grade grade) => Create(grade);
         public IEnumerable<Grade> GetByIds(IEnumerable<Guid> ids, bool trackChanges) =>
             FindByCondition(x => ids.Contains(x.Id), trackChanges).ToList();
+        public void DeleteGrade(Grade grade)
+        {
+            Delete(grade);
+        }
     }
 }

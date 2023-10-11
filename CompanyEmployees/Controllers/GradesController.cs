@@ -96,5 +96,36 @@ namespace CompanyEmployees.Controllers
             return CreatedAtRoute("GradeCollection", new { ids },
             gradeCollectionToReturn);
         }
+        [HttpDelete("{id}")]
+        public IActionResult DeleteGrade(Guid id)
+        {
+            var grade = _repository.Grade.GetGrade(id, trackChanges: false);
+            if (grade == null)
+            {
+                _logger.LogInfo($"Grade with id: {id} doesn't exist in the database.");
+                return NotFound();
+            }
+            _repository.Grade.DeleteGrade(grade);
+            _repository.Save();
+            return NoContent();
+        }
+        [HttpPut("{id}")]
+        public IActionResult UpdateGrade(Guid id, [FromBody] GradeForUpdateDto grade)
+        {
+            if (grade == null)
+            {
+                _logger.LogError("GradeForUpdateDto object sent from client is null.");
+                return BadRequest("GradeForUpdateDto object is null");
+            }
+            var gradeEntity = _repository.Company.GetCompany(id, trackChanges: true);
+            if (gradeEntity == null)
+            {
+                _logger.LogInfo($"Grade with id: {id} doesn't exist in the database.");
+                return NotFound();
+            }
+            _mapper.Map(grade, gradeEntity);
+            _repository.Save();
+            return NoContent();
+        }
     }
 }

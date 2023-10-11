@@ -3,6 +3,7 @@ using Contracts;
 using Entities.DataTransferObjects;
 using Entities.Models;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CompanyEmployees.Controllers
@@ -74,6 +75,75 @@ namespace CompanyEmployees.Controllers
                 gradeId,
                 id = studentToReturn.Id
             }, studentToReturn);
+        }
+        [HttpDelete("{id}")]
+        public IActionResult DeleteStudentForGrade(Guid gradeId, Guid id)
+        {
+            var grade = _repository.Grade.GetGrade(gradeId, trackChanges: false);
+            if (grade == null)
+            {
+                _logger.LogInfo($"Grade with id: {gradeId} doesn't exist in the database.");
+            return NotFound();
+            }
+            var studentForGrade = _repository.Student.GetStudent(gradeId, id, trackChanges: false);
+            if (studentForGrade == null)
+            {
+                _logger.LogInfo($"Student with id: {id} doesn't exist in the database.");
+            return NotFound();
+            }
+            _repository.Student.DeleteStudent(studentForGrade);
+            _repository.Save();
+            return NoContent();
+        }
+        [HttpPut("{id}")]
+        public IActionResult UpdateStudentForGrade(Guid gradeId, Guid id, [FromBody] StudentForUpdateDto student)
+        {
+            if (student == null)
+            {
+                _logger.LogError("StudentForUpdateDto object sent from client is null.");
+            return BadRequest("StudentForUpdateDto object is null");
+            }
+            var grade = _repository.Grade.GetGrade(gradeId, trackChanges: false);
+            if (grade == null)
+            {
+                _logger.LogInfo($"Grade with id: {gradeId} doesn't exist in the database.");
+            return NotFound();
+            }
+            var studentEntity = _repository.Student.GetStudent(gradeId, id, trackChanges: true);
+            if (studentEntity == null)
+            {
+                _logger.LogInfo($"Student with id: {id} doesn't exist in the database.");
+            return NotFound();
+            }
+            _mapper.Map(student, studentEntity);
+            _repository.Save();
+            return NoContent();
+        }
+        [HttpPatch("{id}")]
+        public IActionResult PartiallyUpdateStudentForGrade(Guid gradeId, Guid id, [FromBody] JsonPatchDocument<StudentForUpdateDto> patchDoc)
+        {
+            if (patchDoc == null)
+            {
+                _logger.LogError("patchDoc object sent from client is null.");
+                return BadRequest("patchDoc object is null");
+            }
+            var grade = _repository.Grade.GetGrade(gradeId, trackChanges: false);
+            if (grade == null)
+            {
+                _logger.LogInfo($"Grade with id: {gradeId} doesn't exist in the database.");
+                return NotFound();
+            }
+            var studentEntity = _repository.Student.GetStudent(gradeId, id,trackChanges: true);
+            if (studentEntity == null)
+            {
+                _logger.LogInfo($"Student with id: {id} doesn't exist in the database.");
+                return NotFound();
+            }
+            var studentToPatch = _mapper.Map<StudentForUpdateDto>(studentEntity);
+            patchDoc.ApplyTo(studentToPatch);
+            _mapper.Map(studentToPatch, studentEntity);
+            _repository.Save();
+            return NoContent();
         }
     }
 }
