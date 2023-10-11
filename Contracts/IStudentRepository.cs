@@ -9,8 +9,8 @@ namespace Contracts
 {
     public interface IStudentRepository
     {
-        IEnumerable<Student> GetStudents(Guid gradeId, bool trackChanges);
-        Student GetStudent(Guid gradeId, Guid id, bool trackChanges);
+        Task<IEnumerable<Student>> GetStudentsAsync(Guid gradeId, bool trackChanges);
+        Task<Student> GetStudentAsync(Guid gradeId, Guid id, bool trackChanges);
         void CreateStudentForGrade(Guid gradeId, Student student);
         void DeleteStudent(Student student);
 

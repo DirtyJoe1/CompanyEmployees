@@ -1,6 +1,7 @@
 ﻿using Contracts;
 using Entities;
 using Entities.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,21 +12,15 @@ namespace Repository
 {
     public class GradeRepository : RepositoryBase<Grade>, IGradeRepository
     {
-        public GradeRepository(RepositoryContext repositoryContext)
-            : base(repositoryContext) 
-        {
-
-        }
-        public IEnumerable<Grade> GetAllGrades(bool trackChanges) =>
-            FindAll(trackChanges)
+        public GradeRepository(RepositoryContext repositoryContext): base(repositoryContext) {}
+        public async Task<IEnumerable<Grade>> GetAllGradesAsync(bool trackChanges) => await FindAll(trackChanges)
             .OrderBy(c => c.Name)
-            .ToList();
-        public Grade GetGrade(Guid gradeId, bool trackChanges) =>
-            FindByCondition(c => c.Id.Equals(gradeId), trackChanges)
-            .SingleOrDefault();
+            .ToListAsync();
+        public async Task<Grade> GetGradeAsync(Guid gradeId, bool trackChanges) => await FindByCondition(c => c.Id.Equals(gradeId), trackChanges)
+            .SingleOrDefaultAsync();
         public void CreateGrade(Grade grade) => Create(grade);
-        public IEnumerable<Grade> GetByIds(IEnumerable<Guid> ids, bool trackChanges) =>
-            FindByCondition(x => ids.Contains(x.Id), trackChanges).ToList();
+        public async Task<IEnumerable<Grade>> GetByIdsAsync(IEnumerable<Guid> ids, bool trackChanges) => await FindByCondition(x => ids.Contains(x.Id), trackChanges)
+            .ToListAsync();
         public void DeleteGrade(Grade grade)
         {
             Delete(grade);

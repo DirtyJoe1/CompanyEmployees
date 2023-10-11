@@ -9,10 +9,10 @@ namespace Contracts
 {
     public interface IGradeRepository
     {
-        IEnumerable<Grade> GetAllGrades(bool trackChanges);
-        Grade GetGrade(Guid gradeId, bool trackChanges);
+        Task<IEnumerable<Grade>> GetAllGradesAsync(bool trackChanges);
+        Task<Grade> GetGradeAsync(Guid gradeId, bool trackChanges);
         void CreateGrade(Grade grade);
-        IEnumerable<Grade> GetByIds(IEnumerable<Guid> ids, bool trackChanges);
+        Task<IEnumerable<Grade>> GetByIdsAsync(IEnumerable<Guid> ids, bool trackChanges);
         void DeleteGrade(Grade grade);
     }
 }

@@ -22,28 +22,28 @@ namespace CompanyEmployees.Controllers
             _mapper = mapper;
         }
         [HttpGet]
-        public IActionResult GetStudentsForGrade(Guid gradeId)
+        public async Task<IActionResult> GetStudentsForGrade(Guid gradeId)
         {
-            var grade = _repository.Grade.GetGrade(gradeId, trackChanges: false);
+            var grade = await _repository.Grade.GetGradeAsync(gradeId, trackChanges: false);
             if (grade == null)
             {
                 _logger.LogInfo($"Grade with id: {gradeId} doesn't exist in the database.");
                 return NotFound();
             }
-            var studentsFromDb = _repository.Student.GetStudents(gradeId, trackChanges: false);
+            var studentsFromDb = await _repository.Student.GetStudentsAsync(gradeId, trackChanges: false);
             var studentsDto = _mapper.Map<IEnumerable<StudentDto>>(studentsFromDb);
             return Ok(studentsDto);
         }
         [HttpGet("{id}", Name = "GetStudentForGrade")]
-        public IActionResult GetStudentForGrade(Guid gradeId, Guid id)
+        public async Task<IActionResult> GetStudentForGrade(Guid gradeId, Guid id)
         {
-            var grade = _repository.Grade.GetGrade(gradeId, trackChanges: false);
+            var grade = await _repository.Grade.GetGradeAsync(gradeId, trackChanges: false);
             if (grade == null)
             {
                 _logger.LogInfo($"Grade with id: {gradeId} doesn't exist in the database.");
                 return NotFound();
             }
-            var studentDb = _repository.Student.GetStudent(gradeId, id, trackChanges: false);
+            var studentDb = await _repository.Student.GetStudentAsync(gradeId, id, trackChanges: false);
             if (studentDb == null)
             {
                 _logger.LogInfo($"Student with id: {id} doesn't exist in the database.");
@@ -53,14 +53,19 @@ namespace CompanyEmployees.Controllers
             return Ok(student);
         }
         [HttpPost]
-        public IActionResult CreateStudentForGrade(Guid gradeId, [FromBody] StudentForCreationDto student)
+        public async Task<IActionResult> CreateStudentForGrade(Guid gradeId, [FromBody] StudentForCreationDto student)
         {
             if (student == null)
             {
                 _logger.LogError("StudentForCreationDto object sent from client is null.");
                 return BadRequest("StudentForCreationDto object is null");
             }
-            var grade = _repository.Grade.GetGrade(gradeId, trackChanges: false);
+            if (!ModelState.IsValid)
+            {
+                _logger.LogError("Invalid model state for the StudentForCreationDto object");
+                return UnprocessableEntity(ModelState);
+            }
+            var grade = await _repository.Grade.GetGradeAsync(gradeId, trackChanges: false);
             if (grade == null)
             {
                 _logger.LogInfo($"Grade with id: {gradeId} doesn't exist in the database.");
@@ -68,7 +73,7 @@ namespace CompanyEmployees.Controllers
             }
             var studentEntity = _mapper.Map<Student>(student);
             _repository.Student.CreateStudentForGrade(gradeId, studentEntity);
-            _repository.Save();
+            await _repository.SaveAsync();
             var studentToReturn = _mapper.Map<StudentDto>(studentEntity);
             return CreatedAtRoute("GetStudentForGrade", new
             {
@@ -77,72 +82,83 @@ namespace CompanyEmployees.Controllers
             }, studentToReturn);
         }
         [HttpDelete("{id}")]
-        public IActionResult DeleteStudentForGrade(Guid gradeId, Guid id)
+        public async Task<IActionResult> DeleteStudentForGrade(Guid gradeId, Guid id)
         {
-            var grade = _repository.Grade.GetGrade(gradeId, trackChanges: false);
+            var grade = await _repository.Grade.GetGradeAsync(gradeId, trackChanges: false);
             if (grade == null)
             {
                 _logger.LogInfo($"Grade with id: {gradeId} doesn't exist in the database.");
             return NotFound();
             }
-            var studentForGrade = _repository.Student.GetStudent(gradeId, id, trackChanges: false);
+            var studentForGrade = await _repository.Student.GetStudentAsync(gradeId, id, trackChanges: false);
             if (studentForGrade == null)
             {
                 _logger.LogInfo($"Student with id: {id} doesn't exist in the database.");
             return NotFound();
             }
             _repository.Student.DeleteStudent(studentForGrade);
-            _repository.Save();
+            await _repository.SaveAsync();
             return NoContent();
         }
         [HttpPut("{id}")]
-        public IActionResult UpdateStudentForGrade(Guid gradeId, Guid id, [FromBody] StudentForUpdateDto student)
+        public async Task<IActionResult> UpdateStudentForGrade(Guid gradeId, Guid id, [FromBody] StudentForUpdateDto student)
         {
             if (student == null)
             {
                 _logger.LogError("StudentForUpdateDto object sent from client is null.");
             return BadRequest("StudentForUpdateDto object is null");
             }
-            var grade = _repository.Grade.GetGrade(gradeId, trackChanges: false);
+            if (!ModelState.IsValid)
+            {
+                _logger.LogError("Invalid model state for the EmployeeForUpdateDto object");
+                return UnprocessableEntity(ModelState);
+            }
+            var grade = await _repository.Grade.GetGradeAsync(gradeId, trackChanges: false);
             if (grade == null)
             {
                 _logger.LogInfo($"Grade with id: {gradeId} doesn't exist in the database.");
             return NotFound();
             }
-            var studentEntity = _repository.Student.GetStudent(gradeId, id, trackChanges: true);
+            var studentEntity = await _repository.Student.GetStudentAsync(gradeId, id, trackChanges: true);
             if (studentEntity == null)
             {
                 _logger.LogInfo($"Student with id: {id} doesn't exist in the database.");
             return NotFound();
             }
             _mapper.Map(student, studentEntity);
-            _repository.Save();
+            await _repository.SaveAsync();
             return NoContent();
         }
         [HttpPatch("{id}")]
-        public IActionResult PartiallyUpdateStudentForGrade(Guid gradeId, Guid id, [FromBody] JsonPatchDocument<StudentForUpdateDto> patchDoc)
+        public async Task<IActionResult> PartiallyUpdateStudentForGrade(Guid gradeId, Guid id, [FromBody] JsonPatchDocument<StudentForUpdateDto> patchDoc)
         {
             if (patchDoc == null)
             {
                 _logger.LogError("patchDoc object sent from client is null.");
                 return BadRequest("patchDoc object is null");
             }
-            var grade = _repository.Grade.GetGrade(gradeId, trackChanges: false);
+            var grade = await _repository.Grade.GetGradeAsync(gradeId, trackChanges: false);
             if (grade == null)
             {
                 _logger.LogInfo($"Grade with id: {gradeId} doesn't exist in the database.");
                 return NotFound();
             }
-            var studentEntity = _repository.Student.GetStudent(gradeId, id,trackChanges: true);
+            var studentEntity = await _repository.Student.GetStudentAsync(gradeId, id,trackChanges: true);
             if (studentEntity == null)
             {
                 _logger.LogInfo($"Student with id: {id} doesn't exist in the database.");
                 return NotFound();
             }
             var studentToPatch = _mapper.Map<StudentForUpdateDto>(studentEntity);
-            patchDoc.ApplyTo(studentToPatch);
+            patchDoc.ApplyTo(studentToPatch, ModelState);
+            TryValidateModel(studentToPatch);
+            if (!ModelState.IsValid)
+            {
+                _logger.LogError("Invalid model state for the patch document");
+                return UnprocessableEntity(ModelState);
+            }
             _mapper.Map(studentToPatch, studentEntity);
-            _repository.Save();
+            await _repository.SaveAsync();
             return NoContent();
         }
     }

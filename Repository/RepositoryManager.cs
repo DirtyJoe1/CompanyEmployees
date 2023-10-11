@@ -15,6 +15,7 @@ namespace Repository
         private IEmployeeRepository _employeeRepository;
         private IGradeRepository _gradeRepository;
         private IStudentRepository _studentRepository;
+
         public RepositoryManager(RepositoryContext repositoryContext)
         {
             _repositoryContext = repositoryContext;
@@ -55,6 +56,6 @@ namespace Repository
                 return _studentRepository;
             } 
         }
-        public void Save() => _repositoryContext.SaveChanges();
+        public Task SaveAsync() => _repositoryContext.SaveChangesAsync();
     }
 }

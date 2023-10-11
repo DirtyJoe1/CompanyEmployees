@@ -12,6 +12,6 @@ namespace Contracts
         IEmployeeRepository Employee { get; }
         IGradeRepository Grade { get; }
         IStudentRepository Student { get; }
-        void Save();
+        Task SaveAsync();
     }
 }

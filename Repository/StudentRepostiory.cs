@@ -1,6 +1,7 @@
 ﻿using Contracts;
 using Entities;
 using Entities.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,14 +12,12 @@ namespace Repository
 {
     public class StudentRepostiory : RepositoryBase<Student>, IStudentRepository
     {
-        public StudentRepostiory(RepositoryContext repositoryContext)
-            : base(repositoryContext) { }
-        public IEnumerable<Student> GetStudents(Guid gradeId, bool trackChanges) =>
-            FindByCondition(e => e.GradeId.Equals(gradeId), trackChanges)
-            .OrderBy(e => e.Name);
-        public Student GetStudent(Guid gradeId, Guid id, bool trackChanges) =>
-            FindByCondition(e => e.GradeId.Equals(gradeId) && e.Id.Equals(id), trackChanges)
-            .SingleOrDefault();
+        public StudentRepostiory(RepositoryContext repositoryContext): base(repositoryContext) { }
+        public async Task<IEnumerable<Student>> GetStudentsAsync(Guid gradeId, bool trackChanges) => await FindByCondition(e => e.GradeId.Equals(gradeId), trackChanges)
+            .OrderBy(e => e.Name)
+            .ToListAsync();
+        public async Task<Student> GetStudentAsync(Guid gradeId, Guid id, bool trackChanges) => await FindByCondition(e => e.GradeId.Equals(gradeId) && e.Id.Equals(id), trackChanges)
+            .SingleOrDefaultAsync();
         public void CreateStudentForGrade(Guid gradeId, Student student)
         {
             student.GradeId = gradeId;
