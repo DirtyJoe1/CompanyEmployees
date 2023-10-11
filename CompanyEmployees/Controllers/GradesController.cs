@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using CompanyEmployees.ActionFilters;
 using CompanyEmployees.ModelBinders;
 using Contracts;
 using Entities.DataTransferObjects;
@@ -44,13 +45,9 @@ namespace CompanyEmployees.Controllers
             }
         }
         [HttpPost]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<IActionResult> CreateGrade([FromBody] GradeForCreationDto grade)
         {
-            if (grade == null)
-            {
-                _logger.LogError("GradeForCreationDto object sent from client is null.");
-                return BadRequest("GradeForCreationDto object is null");
-            }
             var gradeEntity = _mapper.Map<Grade>(grade);
             _repository.Grade.CreateGrade(gradeEntity);
             await _repository.SaveAsync();
@@ -77,13 +74,9 @@ namespace CompanyEmployees.Controllers
             return Ok(gradesToReturn);
         }
         [HttpPost("collection")]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<IActionResult> CreateGradeCollection([FromBody] IEnumerable<GradeForCreationDto> gradeCollection)
         {
-            if (gradeCollection == null)
-            {
-                _logger.LogError("Grade collection sent from client is null.");
-                return BadRequest("Grade collection is null");
-            }
             var gradeEntities = _mapper.Map<IEnumerable<Grade>>(gradeCollection);
             foreach (var grade in gradeEntities)
             {
@@ -110,19 +103,11 @@ namespace CompanyEmployees.Controllers
             return NoContent();
         }
         [HttpPut("{id}")]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
+        [ServiceFilter(typeof(ValidateGradeExistsAttribute))]
         public async Task<IActionResult> UpdateGrade(Guid id, [FromBody] GradeForUpdateDto grade)
         {
-            if (grade == null)
-            {
-                _logger.LogError("GradeForUpdateDto object sent from client is null.");
-                return BadRequest("GradeForUpdateDto object is null");
-            }
-            var gradeEntity = await _repository.Company.GetCompanyAsync(id, trackChanges: true);
-            if (gradeEntity == null)
-            {
-                _logger.LogInfo($"Grade with id: {id} doesn't exist in the database.");
-                return NotFound();
-            }
+            var gradeEntity = HttpContext.Items["grade"] as Grade;
             _mapper.Map(grade, gradeEntity);
             await _repository.SaveAsync();
             return NoContent();

@@ -1,4 +1,5 @@
 ﻿using Entities.Models;
+using Entities.RequestFeatures;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,7 @@ namespace Contracts
 {
     public interface IStudentRepository
     {
-        Task<IEnumerable<Student>> GetStudentsAsync(Guid gradeId, bool trackChanges);
+        Task<PagedList<Student>> GetStudentsAsync(Guid gradeId, StudentParameters studentParameters, bool trackChanges);
         Task<Student> GetStudentAsync(Guid gradeId, Guid id, bool trackChanges);
         void CreateStudentForGrade(Guid gradeId, Student student);
         void DeleteStudent(Student student);

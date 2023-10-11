@@ -1,10 +1,13 @@
 ﻿using AutoMapper;
+using CompanyEmployees.ActionFilters;
 using Contracts;
 using Entities.DataTransferObjects;
 using Entities.Models;
+using Entities.RequestFeatures;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace CompanyEmployees.Controllers
 {
@@ -22,15 +25,18 @@ namespace CompanyEmployees.Controllers
             _mapper = mapper;
         }
         [HttpGet]
-        public async Task<IActionResult> GetStudentsForGrade(Guid gradeId)
+        public async Task<IActionResult> GetStudentsForGrade(Guid gradeId, [FromQuery] StudentParameters studentParameters)
         {
+            if (!studentParameters.ValidAgeRange)
+                return BadRequest("Max age can't be less than min age.");
             var grade = await _repository.Grade.GetGradeAsync(gradeId, trackChanges: false);
             if (grade == null)
             {
                 _logger.LogInfo($"Grade with id: {gradeId} doesn't exist in the database.");
                 return NotFound();
             }
-            var studentsFromDb = await _repository.Student.GetStudentsAsync(gradeId, trackChanges: false);
+            var studentsFromDb = await _repository.Student.GetStudentsAsync(gradeId, studentParameters,trackChanges: false);
+            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(studentsFromDb.MetaData));
             var studentsDto = _mapper.Map<IEnumerable<StudentDto>>(studentsFromDb);
             return Ok(studentsDto);
         }
@@ -53,18 +59,9 @@ namespace CompanyEmployees.Controllers
             return Ok(student);
         }
         [HttpPost]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<IActionResult> CreateStudentForGrade(Guid gradeId, [FromBody] StudentForCreationDto student)
         {
-            if (student == null)
-            {
-                _logger.LogError("StudentForCreationDto object sent from client is null.");
-                return BadRequest("StudentForCreationDto object is null");
-            }
-            if (!ModelState.IsValid)
-            {
-                _logger.LogError("Invalid model state for the StudentForCreationDto object");
-                return UnprocessableEntity(ModelState);
-            }
             var grade = await _repository.Grade.GetGradeAsync(gradeId, trackChanges: false);
             if (grade == null)
             {
@@ -82,68 +79,35 @@ namespace CompanyEmployees.Controllers
             }, studentToReturn);
         }
         [HttpDelete("{id}")]
+        [ServiceFilter(typeof(ValidateStudentForGradeExistsAttribute))]
         public async Task<IActionResult> DeleteStudentForGrade(Guid gradeId, Guid id)
         {
-            var grade = await _repository.Grade.GetGradeAsync(gradeId, trackChanges: false);
-            if (grade == null)
-            {
-                _logger.LogInfo($"Grade with id: {gradeId} doesn't exist in the database.");
-            return NotFound();
-            }
-            var studentForGrade = await _repository.Student.GetStudentAsync(gradeId, id, trackChanges: false);
-            if (studentForGrade == null)
-            {
-                _logger.LogInfo($"Student with id: {id} doesn't exist in the database.");
-            return NotFound();
-            }
+            var studentForGrade = HttpContext.Items["student"] as Student;
             _repository.Student.DeleteStudent(studentForGrade);
             await _repository.SaveAsync();
             return NoContent();
         }
         [HttpPut("{id}")]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
+        [ServiceFilter(typeof(ValidateStudentForGradeExistsAttribute))]
         public async Task<IActionResult> UpdateStudentForGrade(Guid gradeId, Guid id, [FromBody] StudentForUpdateDto student)
         {
-            if (student == null)
-            {
-                _logger.LogError("StudentForUpdateDto object sent from client is null.");
-            return BadRequest("StudentForUpdateDto object is null");
-            }
-            if (!ModelState.IsValid)
-            {
-                _logger.LogError("Invalid model state for the EmployeeForUpdateDto object");
-                return UnprocessableEntity(ModelState);
-            }
-            var grade = await _repository.Grade.GetGradeAsync(gradeId, trackChanges: false);
-            if (grade == null)
-            {
-                _logger.LogInfo($"Grade with id: {gradeId} doesn't exist in the database.");
-            return NotFound();
-            }
-            var studentEntity = await _repository.Student.GetStudentAsync(gradeId, id, trackChanges: true);
-            if (studentEntity == null)
-            {
-                _logger.LogInfo($"Student with id: {id} doesn't exist in the database.");
-            return NotFound();
-            }
+            var studentEntity = HttpContext.Items["student"] as Student;
             _mapper.Map(student, studentEntity);
             await _repository.SaveAsync();
             return NoContent();
         }
         [HttpPatch("{id}")]
+        [ServiceFilter(typeof(ValidateStudentForGradeExistsAttribute))]
         public async Task<IActionResult> PartiallyUpdateStudentForGrade(Guid gradeId, Guid id, [FromBody] JsonPatchDocument<StudentForUpdateDto> patchDoc)
         {
-            if (patchDoc == null)
-            {
-                _logger.LogError("patchDoc object sent from client is null.");
-                return BadRequest("patchDoc object is null");
-            }
             var grade = await _repository.Grade.GetGradeAsync(gradeId, trackChanges: false);
             if (grade == null)
             {
                 _logger.LogInfo($"Grade with id: {gradeId} doesn't exist in the database.");
                 return NotFound();
             }
-            var studentEntity = await _repository.Student.GetStudentAsync(gradeId, id,trackChanges: true);
+            var studentEntity = HttpContext.Items["student"] as Student;
             if (studentEntity == null)
             {
                 _logger.LogInfo($"Student with id: {id} doesn't exist in the database.");
