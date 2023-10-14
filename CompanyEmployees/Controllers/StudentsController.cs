@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using Repository.DataShaping;
 
 namespace CompanyEmployees.Controllers
 {
@@ -18,11 +19,13 @@ namespace CompanyEmployees.Controllers
         private readonly IRepositoryManager _repository;
         private readonly ILoggerManager _logger;
         private readonly IMapper _mapper;
-        public StudentsController(IRepositoryManager repository, ILoggerManager logger, IMapper mapper)
+        private readonly IDataShaper<StudentDto> _dataShaper;
+        public StudentsController(IRepositoryManager repository, ILoggerManager logger, IMapper mapper, IDataShaper<StudentDto> dataShaper)
         {
             _repository = repository;
             _logger = logger;
             _mapper = mapper;
+            _dataShaper = dataShaper;
         }
         [HttpGet]
         public async Task<IActionResult> GetStudentsForGrade(Guid gradeId, [FromQuery] StudentParameters studentParameters)
@@ -38,7 +41,7 @@ namespace CompanyEmployees.Controllers
             var studentsFromDb = await _repository.Student.GetStudentsAsync(gradeId, studentParameters,trackChanges: false);
             Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(studentsFromDb.MetaData));
             var studentsDto = _mapper.Map<IEnumerable<StudentDto>>(studentsFromDb);
-            return Ok(studentsDto);
+            return Ok(_dataShaper.ShapeData(studentsDto, studentParameters.Fields));
         }
         [HttpGet("{id}", Name = "GetStudentForGrade")]
         public async Task<IActionResult> GetStudentForGrade(Guid gradeId, Guid id)
