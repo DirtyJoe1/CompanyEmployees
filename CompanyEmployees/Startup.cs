@@ -44,6 +44,7 @@ namespace CompanyEmployees
             services.AddScoped<ValidateEmployeeForCompanyExistsAttribute>();
             services.AddScoped<ValidateGradeExistsAttribute>();
             services.AddScoped<ValidateStudentForGradeExistsAttribute>();
+            services.ConfigureVersioning();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerManager logger)
