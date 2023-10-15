@@ -12,6 +12,7 @@ namespace CompanyEmployees.Controllers
 {
     [Route("api/grades")]
     [ApiController]
+    [ApiExplorerSettings(GroupName = "v1")]
     public class GradesController : ControllerBase
     {
         private readonly IRepositoryManager _repository;
@@ -23,6 +24,10 @@ namespace CompanyEmployees.Controllers
             _logger = logger;
             _mapper = mapper;
         }
+        /// <summary>
+        /// Получает список всех классов
+        /// </summary>
+        /// <returns> Список классов</returns>.
         [HttpGet(Name = "GetGrades"), Authorize(Roles = "Teacher")]
         [HttpHead]
         public async Task<IActionResult> GetGrades()
@@ -46,6 +51,14 @@ namespace CompanyEmployees.Controllers
                 return Ok(gradeDto);
             }
         }
+        /// <summary>
+        /// Создает класс
+        /// </summary>
+        /// <param name="grade"></param>.
+        /// <returns>Созданный класс</returns>.
+        /// <response code="201"> Возвращает только что созданный элемент</response>.
+        /// <response code="400"> Если элемент равен null</response>.
+        /// <response code="422"> Если модель недействительна</response>.
         [HttpPost]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<IActionResult> CreateGrade([FromBody] GradeForCreationDto grade)
