@@ -4,6 +4,7 @@ using Contracts;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
 using NLog;
+using Repository;
 
 namespace CompanyEmployees
 {
@@ -44,7 +45,11 @@ namespace CompanyEmployees
             services.AddScoped<ValidateEmployeeForCompanyExistsAttribute>();
             services.AddScoped<ValidateGradeExistsAttribute>();
             services.AddScoped<ValidateStudentForGradeExistsAttribute>();
+            services.AddScoped<IAuthenticationManager, AuthenticationManager>();
             services.ConfigureVersioning();
+            services.AddAuthentication();
+            services.ConfigureIdentity();
+            services.ConfigureJWT(Configuration);
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerManager logger)
@@ -65,7 +70,7 @@ namespace CompanyEmployees
             });
 
             app.UseRouting();
-
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
