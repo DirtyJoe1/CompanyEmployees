@@ -1,5 +1,6 @@
 ﻿using Azure.Core;
 using Entities.DataTransferObjects;
+using Entities.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -51,6 +52,10 @@ namespace CEApp
             TokenStorage.Key = responseData.access_token;
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", TokenStorage.Key);
             return responseMessage;
+        }
+        public async Task<List<Company>> GetCompaniesAsync()
+        {
+            return await _httpClient.GetFromJsonAsync<List<Company>>(ComapniesUrl);
         }
     }
 }

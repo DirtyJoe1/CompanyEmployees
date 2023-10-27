@@ -38,7 +38,7 @@ namespace CEApp.Pages
             HttpResponseMessage response = await repository.PostAuthenticationLogin(login);
             if (response.IsSuccessStatusCode)
             {
-                MessageBox.Show("Успех");
+                NavigationService.Navigate(new CompaniesPage(repository));
             }
             else
             {
