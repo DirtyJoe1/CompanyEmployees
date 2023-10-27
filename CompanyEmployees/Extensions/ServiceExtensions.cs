@@ -75,12 +75,14 @@ namespace CompanyEmployees.Extensions
         }
         public static void ConfigureJWT(this IServiceCollection services, IConfiguration configuration)
         {
+            var options = new JwtBearerOptions();
             var jwtSettings = configuration.GetSection("JwtSettings");
-            var secretKey = Environment.GetEnvironmentVariable("SECRET");
+            var validIssuer = jwtSettings.GetSection("validIssuer").Value;
+            var validAudience = jwtSettings.GetSection("validAudience").Value;
+            var secretKey = "MokshenSuperDuperUltraSecretSecretKey"; //Environment.GetEnvironmentVariable("SECRET");
             services.AddAuthentication(opt =>
             {
-                opt.DefaultAuthenticateScheme =
-               JwtBearerDefaults.AuthenticationScheme;
+                opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             })
             .AddJwtBearer(options =>
@@ -91,8 +93,8 @@ namespace CompanyEmployees.Extensions
                     ValidateAudience = true,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
-                    ValidIssuer = jwtSettings.GetSection("validIssuer").Value,
-                    ValidAudience = jwtSettings.GetSection("validAudience").Value,
+                    ValidIssuer = validIssuer,
+                    ValidAudience = validAudience,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey))
                 };
             });
