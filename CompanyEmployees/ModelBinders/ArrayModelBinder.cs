@@ -14,8 +14,8 @@ namespace CompanyEmployees.ModelBinders
                 return Task.CompletedTask;
             }
             var providedValue = bindingContext.ValueProvider
-            .GetValue(bindingContext.ModelName)
-            .ToString();
+                .GetValue(bindingContext.ModelName)
+                .ToString();
             if (string.IsNullOrEmpty(providedValue))
             {
                 bindingContext.Result = ModelBindingResult.Success(null);

@@ -27,12 +27,10 @@ namespace CEApp
 
         private void LoginButton_Click(object sender, RoutedEventArgs e)
         {
-            WindowContent.Source = new Uri("Pages/LoginPage.xaml", UriKind.Relative);
         }
 
         private void RegisterButton_Click(object sender, RoutedEventArgs e)
         {
-            WindowContent.Source= new Uri("Pages/LoginPage.xaml", UriKind.Relative);
         }
     }
 }

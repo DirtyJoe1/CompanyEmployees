@@ -10,15 +10,41 @@
       ShowsNavigationUI="False">
 
     <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition/>
-            <ColumnDefinition/>
-        </Grid.ColumnDefinitions>
-        <StackPanel Grid.Column="0">
+        <StackPanel HorizontalAlignment="Left">
             <Button x:Name="GetAllCompaniesButton"
-                    Content="GetAllCompanies" Click="GetAllCompaniesButton_Click"/>
+                    Width="300"
+                    Content="Get All Companies" 
+                    Click="GetAllCompaniesButton_Click"/>
+            <Button x:Name="GetCompaniesColection"
+                    Width="300"
+                    Content="Get Companies Collection"
+                    Click="GetCompaniesColection_Click"/>
             <TextBlock x:Name="InfoTextBox"
-                       Width="300"/>
+                       Width="300"
+                       Visibility="Hidden"/>
+            <Label Content="Companies Ids"/>
+            <ListBox x:Name="CompanyIdsListBox"
+                     Height="100"/>
+            <Button x:Name="DeleteCompanyButton"
+                    Content="Delete Company" 
+                    Click="DeleteCompanyButton_Click"/>
+        </StackPanel>
+        <StackPanel HorizontalAlignment="Right"
+                    Width="300">
+            <Label Content="Company Name"/>
+            <TextBox x:Name="CompanyNameTextBox"/>
+            <Label Content="Company Address"/>
+            <TextBox x:Name="CompanyAddressTextBox"/>
+            <Label Content="Company Country"/>
+            <TextBox x:Name="CompanyCountryTextBox"/>
+            <Label Content="Employee Name"/>
+            <TextBox x:Name="EmployeeNameTextBox"/>
+            <Label Content="Employee Age"/>
+            <TextBox x:Name="EmployeeAgeTextBox"/>
+            <Label Content="Employee Position"/>
+            <TextBox x:Name="EmployeePositionTextBox"/>
+            <Button x:Name="CreateCompanyButton"
+                    Content="Create Company" Click="CreateCompanyButton_Click"/>
         </StackPanel>
     </Grid>
 </Page>

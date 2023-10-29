@@ -7,17 +7,6 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="1*"/>
-            <RowDefinition Height="9*"/>
-        </Grid.RowDefinitions>
-        <StackPanel Orientation="Vertical"
-                    HorizontalAlignment="Center">
-            <Button x:Name="LoginButton"
-                    Content="Login" Click="LoginButton_Click"/>
-            <Button x:Name="RegisterButton"
-                    Content="Register" Click="RegisterButton_Click"/>
-        </StackPanel>
         <Frame x:Name="WindowContent"
                Grid.Row="1"
                Source="Pages/LoginPage.xaml"/>

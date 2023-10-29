@@ -1,6 +1,9 @@
-﻿using System;
+﻿using Entities.DataTransferObjects;
+using Entities.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -25,11 +28,13 @@ namespace CEApp.Pages
         {
             InitializeComponent();
             _repository = repository;
+            FillIdsListBox();
         }
 
         private async void GetAllCompaniesButton_Click(object sender, RoutedEventArgs e)
         {
             InfoTextBox.Text = "";
+            InfoTextBox.Visibility = Visibility.Visible;
             var response = await _repository.GetCompaniesAsync();
             foreach (var companies in response)
             {
@@ -39,6 +44,57 @@ namespace CEApp.Pages
                 InfoTextBox.Text += companies.Address.ToString() + "\n";
                 InfoTextBox.Text += companies.Country.ToString() + "\n";
             }
+        }
+        private async void FillIdsListBox()
+        {
+            CompanyIdsListBox.Items.Clear();
+            var response = await _repository.GetCompaniesAsync();
+            foreach (var companies in response)
+            {
+                CompanyIdsListBox.Items.Add(companies.Id.ToString());
+            }
+        }
+
+        private async void GetCompaniesColection_Click(object sender, RoutedEventArgs e)
+        {
+            InfoTextBox.Text = "";
+            var response = await _repository.GetCompanyCollectionAsync(CompanyIdsListBox.SelectedItems.ToDynamicList<string>());
+            foreach (var companies in response)
+            {
+                InfoTextBox.Text += "---------------------------------------------------" + "\n";
+                InfoTextBox.Text += companies.Id.ToString() + "\n";
+                InfoTextBox.Text += companies.Name + "\n";
+                InfoTextBox.Text += companies.Address.ToString() + "\n";
+                InfoTextBox.Text += companies.Country.ToString() + "\n";
+            }
+        }
+
+        private async void DeleteCompanyButton_Click(object sender, RoutedEventArgs e)
+        {
+            await _repository.DeleteCompanyAsync(CompanyIdsListBox.SelectedItem.ToString());
+            FillIdsListBox();
+        }
+
+        private async void CreateCompanyButton_Click(object sender, RoutedEventArgs e)
+        {
+            var employeeForCreation = new List<EmployeeForCreationDto>
+            {
+                new EmployeeForCreationDto
+                {
+                    Name = EmployeeNameTextBox.Text,
+                    Age = int.Parse(EmployeeAgeTextBox.Text),
+                    Position = EmployeePositionTextBox.Text,
+                }
+            };
+            var companyForCreation = new CompanyForCreationDto
+            {
+                Name = CompanyNameTextBox.Text,
+                Address = CompanyAddressTextBox.Text,
+                Country = CompanyCountryTextBox.Text,
+                Employees = employeeForCreation,
+            };
+            await _repository.PostCompanyAsync(companyForCreation);
+            FillIdsListBox();
         }
     }
 }

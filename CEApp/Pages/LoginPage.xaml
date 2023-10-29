@@ -6,7 +6,8 @@
       xmlns:local="clr-namespace:CEApp.Pages"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
-      Title="LoginPage">
+      Title="LoginPage"
+      ShowsNavigationUI="False">
     <Grid>
         <StackPanel HorizontalAlignment="Center"
                     VerticalAlignment="Center"
@@ -17,7 +18,10 @@
             <TextBox x:Name="PasswordTextBox"/>
             <Button x:Name="Login"
                     Content="Login"
-                    Margin="0 20 0 0" Click="Login_Click"/>
+                    Margin="0 20 0 20" Click="Login_Click"/>
+            <Button Content="Don't have an account"
+                    x:Name="RegisterButton"
+                    Click="RegisterButton_Click"/>
         </StackPanel>
     </Grid>
 </Page>

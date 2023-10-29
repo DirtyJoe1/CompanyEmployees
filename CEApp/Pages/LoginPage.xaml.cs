@@ -22,6 +22,7 @@ namespace CEApp.Pages
     /// </summary>
     public partial class LoginPage : Page
     {
+        Repository repository = new Repository();
         public LoginPage()
         {
             InitializeComponent();
@@ -29,7 +30,6 @@ namespace CEApp.Pages
 
         private async void Login_Click(object sender, RoutedEventArgs e)
         {
-            var repository = new Repository();
             var login = new UserForAuthenticationDto
             {
                 UserName = UsernameTextBox.Text,
@@ -38,12 +38,17 @@ namespace CEApp.Pages
             HttpResponseMessage response = await repository.PostAuthenticationLogin(login);
             if (response.IsSuccessStatusCode)
             {
-                NavigationService.Navigate(new CompaniesPage(repository));
+                NavigationService.Navigate(new SelectionPage(repository));
             }
             else
             {
-                MessageBox.Show("Ошибка");
+                MessageBox.Show(response.StatusCode.ToString());
             }
+        }
+
+        private void RegisterButton_Click(object sender, RoutedEventArgs e)
+        {
+            NavigationService.Navigate(new RegistartionPage(repository));
         }
     }
 }

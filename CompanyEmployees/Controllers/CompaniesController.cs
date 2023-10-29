@@ -70,8 +70,7 @@ namespace CompanyEmployees.Controllers
             _repository.Company.CreateCompany(companyEntity);
             await _repository.SaveAsync();
             var companyToReturn = _mapper.Map<CompanyDto>(companyEntity);
-            return CreatedAtRoute("CompanyById", new { id = companyToReturn.Id },
-            companyToReturn);
+            return CreatedAtRoute("CompanyById", new { id = companyToReturn.Id }, companyToReturn);
         }
         [HttpGet("collection/({ids})", Name = "CompanyCollection")]
         public async Task<IActionResult> GetCompanyCollection([ModelBinder(BinderType = typeof(ArrayModelBinder))] IEnumerable<Guid> ids)
@@ -101,11 +100,9 @@ namespace CompanyEmployees.Controllers
                 _repository.Company.CreateCompany(company);
             }
             await _repository.SaveAsync();
-            var companyCollectionToReturn =
-            _mapper.Map<IEnumerable<CompanyDto>>(companyEntities);
+            var companyCollectionToReturn = _mapper.Map<IEnumerable<CompanyDto>>(companyEntities);
             var ids = string.Join(",", companyCollectionToReturn.Select(c => c.Id));
-            return CreatedAtRoute("CompanyCollection", new { ids },
-            companyCollectionToReturn);
+            return CreatedAtRoute("CompanyCollection", new { ids }, companyCollectionToReturn);
         }
         [HttpDelete("{id}")]
         [ServiceFilter(typeof(ValidateCompanyExistsAttribute))]
